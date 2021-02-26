@@ -211,6 +211,7 @@ export class Terrain extends Elevation {
     _emptyDEMTexture: ?Texture;
     _initializing: ?boolean;
     _emptyDEMTextureDirty: ?boolean;
+    minElevationInMeters: number;
 
     constructor(painter: Painter, style: Style) {
         super();
@@ -245,6 +246,7 @@ export class Terrain extends Elevation {
         this._tilesDirty = {};
         this.style = style;
         this._useVertexMorphing = true;
+        this.minElevationInMeters = Number.POSITIVE_INFINITY;
     }
 
     set style(style: Style) {
@@ -305,6 +307,11 @@ export class Terrain extends Elevation {
             this.proxySourceCache.update(transform);
 
             this._emptyDEMTextureDirty = true;
+
+            for (let tile of this._visibleDemTiles) {
+                const minMaxTree = tile.dem._tree;
+                this.minElevationInMeters = Math.min(this.minElevationInMeters, minMaxTree.minimum);
+            }
         } else {
             this._disable();
         }

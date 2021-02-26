@@ -1280,7 +1280,9 @@ class Transform {
         const groundAngle = Math.PI / 2 + this._pitch;
         const fovAboveCenter = this.fovAboveCenter;
 
-        const cameraToSeaLevelDistance = this._camera.position[2] * this.worldSize / Math.cos(this._pitch);
+        const minElevationInPixels = (this.elevation && this.elevation.minElevationInMeters !== Number.POSITIVE_INFINITY) ?
+            Math.abs(this.elevation.minElevationInMeters) * 2 * pixelsPerMeter : 0;
+        const cameraToSeaLevelDistance = ((this._camera.position[2] * this.worldSize) + minElevationInPixels) / Math.cos(this._pitch);
         const topHalfSurfaceDistance = Math.sin(fovAboveCenter) * cameraToSeaLevelDistance / Math.sin(clamp(Math.PI - groundAngle - fovAboveCenter, 0.01, Math.PI - 0.01));
         const point = this.point;
         const x = point.x, y = point.y;
